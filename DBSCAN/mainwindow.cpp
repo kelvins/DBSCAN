@@ -6,11 +6,46 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    scene = new QGraphicsScene(0, 0, 650, 590);
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->installEventFilter(this);
+
+    pontos = 0;
+
+    //scene->mousePressEvent(QGraphicsSceneMouseEvent *event);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+
+        xValues.append( mouseEvent->pos().x() );
+        yValues.append( mouseEvent->pos().y() );
+        pontos++;
+        ui->labelPontos->setText("Pontos: " + QString::number(pontos) );
+        ui->labelX->setText("X: " + QString::number(mouseEvent->pos().x()) );
+        ui->labelY->setText("Y: " + QString::number(mouseEvent->pos().y()) );
+
+        QBrush blueBrush(Qt::blue);
+        QPen blackPen(Qt::black);
+        blackPen.setWidth(2);
+        scene->addEllipse(mouseEvent->pos().x()-2, mouseEvent->pos().y()-2, 5, 5, blackPen, blueBrush);
+
+        ui->salvarPushButton->setEnabled(true);
+        ui->start2PushButton->setEnabled(true);
+
+        return true;
+    } else {
+        // standard event processing
+        return QObject::eventFilter(obj, event);
+    }
 }
 
 void MainWindow::start()
@@ -125,4 +160,79 @@ void MainWindow::on_startButton_clicked()
     // Checa se o valor das colunas não são os mesmos e chama a função start
     if( ui->col1SpinBox->value() != ui->col2SpinBox->value() )
         start();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    xValues.clear();
+    yValues.clear();
+    pontos = 0;
+    ui->labelPontos->setText("Pontos: 0" );
+    ui->labelX->setText("X: -");
+    ui->labelY->setText("Y: -");
+    scene->clear();
+    ui->salvarPushButton->setEnabled(false);
+    ui->start2PushButton->setEnabled(false);
+}
+
+void MainWindow::on_salvarPushButton_clicked()
+{
+    QString Filename = QFileDialog::getSaveFileName(this, "Save file", "filename.csv", "CSV files (.csv);;", 0, 0); // getting the filename (full path)
+
+    QFile mFile(Filename);
+
+    if(!mFile.open(QFile::WriteOnly | QFile::Text))
+    {
+        qDebug() << "Could not open file for writting";
+        return;
+    }
+
+    QTextStream out(&mFile);
+
+    out << "x,";
+    out << "y" << "\n";
+
+    for (int var = 0; var < xValues.length(); ++var)
+    {
+        out << QString::number( xValues.at(var) );
+        out << ",";
+        out << QString::number( yValues.at(var) );
+        if( var != xValues.length()-1 )
+            out << "\n";
+    }
+
+    QMessageBox::information(this, "Salvo", "Salvo com sucesso!");
+
+    mFile.flush();
+    mFile.close();
+}
+
+void MainWindow::on_start2PushButton_clicked()
+{
+    // START 2
+    // CHAMAR DBSCAN DE OUTRA FORMA
+    if( xValues.isEmpty() )
+    {
+        QMessageBox::information(this, "Informação", "Crie pontos antes de clicar no botão Start.");
+        return;
+    }
+
+    minPoints   = ui->minPointsSpinBox->value();
+    eps         = ui->epsSpinBox->value();
+    n_linhas    = xValues.length();
+
+    col1.clear();
+    col2.clear();
+
+    col1 = xValues;
+    col2 = yValues;
+
+    // Chama o DBSCAN e aguarda o resultado, que será um vetor com a quantidade de dados por grupo
+    QVector<int> grupos = dbscan.start(col1, col2, minPoints, eps, n_linhas);
+
+    // Chama a função que mostra os dados na tela
+    mostraGrupos(grupos);
+
+    // Chama a função que plota os dados na tela
+    plot();
 }

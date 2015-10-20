@@ -8,6 +8,9 @@
 #include <QFile>
 #include <QVector>
 #include <QDebug>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
 
 #include "dbscan.h"
 
@@ -22,7 +25,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 private slots:
     void start();
 
@@ -33,6 +37,12 @@ private slots:
 
     void on_startButton_clicked();
 
+    void on_pushButton_2_clicked();
+
+    void on_salvarPushButton_clicked();
+
+    void on_start2PushButton_clicked();
+
 private:
     DBSCAN dbscan;
     Ui::MainWindow *ui;
@@ -42,6 +52,10 @@ private:
     int minPoints;
     QVector<double> col1;
     QVector<double> col2;
+    QGraphicsScene *scene;
+    QVector<double> xValues; // Values of the QGraphicsView
+    QVector<double> yValues;
+    int pontos;
 };
 
 #endif // MAINWINDOW_H
