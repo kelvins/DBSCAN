@@ -7,8 +7,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    scene = new QGraphicsScene(0, 0, 650, 590);
+    sceneW = 650;
+    sceneH = 590;
+
+    scene = new QGraphicsScene(0, 0, sceneW, sceneH);
     ui->graphicsView->setScene(scene);
+
+    QMatrix m;
+    m.translate(0, sceneH);
+    m.scale(1, -1); // Inverte o eixo da scene
+
+    ui->graphicsView->setMatrix(m);
+
     ui->graphicsView->installEventFilter(this);
 
     pontos = 0;
@@ -27,16 +37,17 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
 
         xValues.append( mouseEvent->pos().x() );
-        yValues.append( mouseEvent->pos().y() );
+        yValues.append( sceneH-mouseEvent->pos().y() );
         pontos++;
         ui->labelPontos->setText("Pontos: " + QString::number(pontos) );
-        ui->labelX->setText("X: " + QString::number(mouseEvent->pos().x()) );
-        ui->labelY->setText("Y: " + QString::number(mouseEvent->pos().y()) );
+
+        ui->labelX->setText("X: " + QString::number( mouseEvent->pos().x() ) );
+        ui->labelY->setText("Y: " + QString::number( sceneH-mouseEvent->pos().y() ) );
 
         QBrush blueBrush(Qt::blue);
         QPen blackPen(Qt::black);
         blackPen.setWidth(2);
-        scene->addEllipse(mouseEvent->pos().x()-2, mouseEvent->pos().y()-2, 5, 5, blackPen, blueBrush);
+        scene->addEllipse(mouseEvent->pos().x()-2, sceneH-mouseEvent->pos().y()-2, 5, 5, blackPen, blueBrush);
 
         ui->salvarPushButton->setEnabled(true);
         ui->start2PushButton->setEnabled(true);
@@ -153,6 +164,7 @@ void MainWindow::on_abreArquivo_clicked()
     filePath = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("All Files ()"));
     ui->caminhoDoArquivoEdit->setText(filePath); // Mostra o caminho no edit
     ui->startButton->setEnabled(true); // Libera o botão
+    ui->carregarPushButton->setEnabled(true);
 }
 
 void MainWindow::on_startButton_clicked()
@@ -235,4 +247,57 @@ void MainWindow::on_start2PushButton_clicked()
 
     // Chama a função que plota os dados na tela
     plot();
+}
+
+void MainWindow::on_carregarPushButton_clicked()
+{
+    // Carregar dados
+
+    // Limpa os vetores
+    col1.clear();
+    col2.clear();
+
+    int coluna1 = ui->col1SpinBox->value();
+    int coluna2 = ui->col2SpinBox->value();
+
+    if( filePath.isEmpty() )
+        return;
+
+    // Testa abrir o arquivo para leitura
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::critical(this, tr("Erro"), tr("Não foi possível abrir o arquivo"));
+        return;
+    }
+
+    // Checa se o arquivo tem cabeçalho, se sim, descarta ele
+    if( ui->cabecalhoCheckBox->isChecked() )
+        file.readLine();
+
+    while(!file.atEnd())
+    {
+        QString line = file.readLine(); // Lê uma linha no arquivo
+        col1.append( line.split(",").at(coluna1-1).toDouble() ); // Lê a coluna 1
+        col2.append( line.split(",").at(coluna2-1).toDouble() ); // Lê a coluna 2
+    }
+
+    file.close(); // Fecha o arquivo
+
+    xValues = col1;
+    yValues = col2;
+
+    pontos = xValues.length();
+    ui->labelPontos->setText("Pontos: " + QString::number(pontos) );
+
+    ui->start2PushButton->setEnabled(true);
+
+    QBrush blueBrush(Qt::red);
+    QPen blackPen(Qt::black);
+    blackPen.setWidth(2);
+
+    scene->clear();
+
+    for (int var = 0; var < pontos; ++var)
+        scene->addEllipse(xValues.at(var), yValues.at(var), 5, 5, blackPen, blueBrush);
+
 }

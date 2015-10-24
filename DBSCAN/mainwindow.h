@@ -43,6 +43,8 @@ private slots:
 
     void on_start2PushButton_clicked();
 
+    void on_carregarPushButton_clicked();
+
 private:
     DBSCAN dbscan;
     Ui::MainWindow *ui;
@@ -56,6 +58,8 @@ private:
     QVector<double> xValues; // Values of the QGraphicsView
     QVector<double> yValues;
     int pontos;
+    int sceneW;
+    int sceneH;
 };
 
 #endif // MAINWINDOW_H

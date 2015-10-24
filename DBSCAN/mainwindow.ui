@@ -342,6 +342,20 @@ color: rgb(243, 243, 243);</string>
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="carregarPushButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(226, 226, 226);
+</string>
+       </property>
+       <property name="text">
+        <string>Carregar Dados</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="salvarPushButton">
        <property name="enabled">
         <bool>false</bool>
