@@ -60,6 +60,9 @@ private:
     int pontos;
     int sceneW;
     int sceneH;
+
+    QString nomeColuna1;
+    QString nomeColuna2;
 };
 
 #endif // MAINWINDOW_H

@@ -81,15 +81,21 @@ void MainWindow::start()
         return;
     }
 
+    QString line;
+
     // Checa se o arquivo tem cabeçalho, se sim, descarta ele
     if( ui->cabecalhoCheckBox->isChecked() )
-        file.readLine();
+    {
+        line = file.readLine();
+        nomeColuna1 = line.split(",").at(coluna1-1);
+        nomeColuna2 = line.split(",").at(coluna2-1);
+    }
 
     n_linhas = 0; // Zera o número de linhas, para começar a contar
 
     while(!file.atEnd())
     {
-        QString line = file.readLine(); // Lê uma linha no arquivo
+        line = file.readLine(); // Lê uma linha no arquivo
         col1.append( line.split(",").at(coluna1-1).toDouble() ); // Lê a coluna 1
         col2.append( line.split(",").at(coluna2-1).toDouble() ); // Lê a coluna 2
         n_linhas++; // Conta o número de linhas
@@ -128,8 +134,8 @@ void MainWindow::plot()
     // Add o gráfico, seta os dados das colunas x e y, seta o label, o estilo e a interação
     ui->plot->addGraph();
     ui->plot->graph(0)->setData(col1, col2);
-    ui->plot->xAxis->setLabel("Coluna 1");
-    ui->plot->yAxis->setLabel("Coluna 2");
+    ui->plot->xAxis->setLabel("Coluna: " + nomeColuna1);
+    ui->plot->yAxis->setLabel("Coluna: " + nomeColuna2);
     ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle));
     ui->plot->graph(0)->setLineStyle(QCPGraph::lsNone);
     ui->plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
@@ -238,6 +244,9 @@ void MainWindow::on_start2PushButton_clicked()
 
     col1 = xValues;
     col2 = yValues;
+
+    nomeColuna1 = "X";
+    nomeColuna2 = "Y";
 
     // Chama o DBSCAN e aguarda o resultado, que será um vetor com a quantidade de dados por grupo
     QVector<int> grupos = dbscan.start(col1, col2, minPoints, eps, n_linhas);
