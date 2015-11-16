@@ -34,7 +34,11 @@ O DBSCAN requer dois parâmetros:
 
 ## Screenshot
 
-![alt text](https://github.com/kelvins/DBSCAN/blob/master/screenshot.png "Screenshot")
+![alt text](https://github.com/kelvins/DBSCAN/blob/master/screenshot1.png "Screenshot")
+
+![alt text](https://github.com/kelvins/DBSCAN/blob/master/screenshot2.png "Screenshot")
+
+![alt text](https://github.com/kelvins/DBSCAN/blob/master/screenshot3.png "Screenshot")
 
 > Obs.: Esta aplicação foi desenvolvida como estudo e trabalho para a disciplina de Mineração de Dados.
 
