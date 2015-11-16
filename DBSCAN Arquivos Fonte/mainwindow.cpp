@@ -31,34 +31,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-bool MainWindow::eventFilter(QObject *obj, QEvent *event)
-{
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-
-        xValues.append( mouseEvent->pos().x() );
-        yValues.append( sceneH-mouseEvent->pos().y() );
-        pontos++;
-        ui->labelPontos->setText("Pontos: " + QString::number(pontos) );
-
-        ui->labelX->setText("X: " + QString::number( mouseEvent->pos().x() ) );
-        ui->labelY->setText("Y: " + QString::number( sceneH-mouseEvent->pos().y() ) );
-
-        QBrush blueBrush(Qt::blue);
-        QPen blackPen(Qt::black);
-        blackPen.setWidth(2);
-        scene->addEllipse(mouseEvent->pos().x()-2, sceneH-mouseEvent->pos().y()-2, 5, 5, blackPen, blueBrush);
-
-        ui->salvarPushButton->setEnabled(true);
-        ui->start2PushButton->setEnabled(true);
-
-        return true;
-    } else {
-        // standard event processing
-        return QObject::eventFilter(obj, event);
-    }
-}
-
 void MainWindow::start()
 {
     // Lê os valores dos campos
@@ -102,6 +74,16 @@ void MainWindow::start()
     }
 
     file.close(); // Fecha o arquivo
+
+    if( ui->parametrosCheckBox->isChecked() )
+    {
+        parametros.start(col1, col2);
+        minPoints = parametros.getMinPoints();
+        eps       = parametros.getEps();
+
+        ui->epsSpinBox->setValue(eps);
+        ui->minPointsSpinBox->setValue(minPoints);
+    }
 
     // Chama o DBSCAN e aguarda o resultado, que será um vetor com a quantidade de dados por grupo
     QVector<int> grupos = dbscan.start(col1, col2, minPoints, eps, n_linhas);
@@ -245,6 +227,16 @@ void MainWindow::on_start2PushButton_clicked()
     col1 = xValues;
     col2 = yValues;
 
+    if( ui->parametrosCheckBox->isChecked() )
+    {
+        parametros.start(col1, col2);
+        minPoints = parametros.getMinPoints();
+        eps       = parametros.getEps();
+
+        ui->epsSpinBox->setValue(eps);
+        ui->minPointsSpinBox->setValue(minPoints);
+    }
+
     nomeColuna1 = "X";
     nomeColuna2 = "Y";
 
@@ -309,4 +301,46 @@ void MainWindow::on_carregarPushButton_clicked()
     for (int var = 0; var < pontos; ++var)
         scene->addEllipse(xValues.at(var), yValues.at(var), 5, 5, blackPen, blueBrush);
 
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+
+        xValues.append( mouseEvent->pos().x() );
+        yValues.append( sceneH-mouseEvent->pos().y() );
+        pontos++;
+        ui->labelPontos->setText("Pontos: " + QString::number(pontos) );
+
+        ui->labelX->setText("X: " + QString::number( mouseEvent->pos().x() ) );
+        ui->labelY->setText("Y: " + QString::number( sceneH-mouseEvent->pos().y() ) );
+
+        QBrush blueBrush(Qt::blue);
+        QPen blackPen(Qt::black);
+        blackPen.setWidth(2);
+        scene->addEllipse(mouseEvent->pos().x()-2, sceneH-mouseEvent->pos().y()-2, 5, 5, blackPen, blueBrush);
+
+        ui->salvarPushButton->setEnabled(true);
+        ui->start2PushButton->setEnabled(true);
+
+        return true;
+    } else {
+        // standard event processing
+        return QObject::eventFilter(obj, event);
+    }
+}
+
+void MainWindow::on_parametrosCheckBox_stateChanged(int state)
+{
+    if( state == 2 )
+    {
+        ui->minPointsSpinBox->setEnabled(false);
+        ui->epsSpinBox->setEnabled(false);
+    }
+    else
+    {
+        ui->minPointsSpinBox->setEnabled(true);
+        ui->epsSpinBox->setEnabled(true);
+    }
 }

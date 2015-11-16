@@ -13,6 +13,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 #include "dbscan.h"
+#include "defineepseminpoints.h"
 
 namespace Ui {
 class MainWindow;
@@ -45,6 +46,8 @@ private slots:
 
     void on_carregarPushButton_clicked();
 
+    void on_parametrosCheckBox_stateChanged(int arg1);
+
 private:
     DBSCAN dbscan;
     Ui::MainWindow *ui;
@@ -63,6 +66,8 @@ private:
 
     QString nomeColuna1;
     QString nomeColuna2;
+
+    DefineEPSeMinPoints parametros;
 };
 
 #endif // MAINWINDOW_H
