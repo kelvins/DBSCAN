@@ -15,12 +15,10 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     qcustomplot.cpp \
-    dbscan.cpp \
-    defineepseminpoints.cpp
+    dbscan.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
-    dbscan.h \
-    defineepseminpoints.h
+    dbscan.h
 
 FORMS    += mainwindow.ui

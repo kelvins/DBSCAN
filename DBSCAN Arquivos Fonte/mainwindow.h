@@ -11,9 +11,9 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QPixmap>
 
 #include "dbscan.h"
-#include "defineepseminpoints.h"
 
 namespace Ui {
 class MainWindow;
@@ -31,7 +31,7 @@ protected:
 private slots:
     void start();
 
-    void mostraGrupos(QVector<int> grupos);
+    void mostraGrupos();
     void plot();
 
     void on_abreArquivo_clicked();
@@ -46,20 +46,28 @@ private slots:
 
     void on_carregarPushButton_clicked();
 
-    void on_parametrosCheckBox_stateChanged(int arg1);
+    void on_salvarComoImagemPushButton_clicked();
+
+    void on_salvarResultadoEmCSV_clicked();
 
 private:
     DBSCAN dbscan;
     Ui::MainWindow *ui;
+
     QString filePath;
+
     int n_linhas;
     double eps;
     int minPoints;
+
     QVector<double> col1;
     QVector<double> col2;
     QGraphicsScene *scene;
     QVector<double> xValues; // Values of the QGraphicsView
     QVector<double> yValues;
+
+    QVector<int> resultado;
+
     int pontos;
     int sceneW;
     int sceneH;
@@ -67,7 +75,6 @@ private:
     QString nomeColuna1;
     QString nomeColuna2;
 
-    DefineEPSeMinPoints parametros;
 };
 
 #endif // MAINWINDOW_H

@@ -7,8 +7,16 @@ QVector<int> DBSCAN::start(QVector<double> col1, QVector<double> col2, int minPo
     this->col1 = col1;
     this->col2 = col2;
     this->eps  = eps;
+
+    if( col1.empty() || col2.empty() || nLinhas == 0 )
+    {
+        QVector<int> vazio;
+        return vazio;
+    }
+
     grupoQueoDadoPertence.clear();
     visitado.clear();
+
     id_grupo = 1; // C = 0
 
     // Nenhum dado foi visitado ainda
@@ -50,17 +58,7 @@ QVector<int> DBSCAN::start(QVector<double> col1, QVector<double> col2, int minPo
         }
     }
 
-    // Agrupa em um novo vetor os grupos formados anteriormente
-    QVector<int> grupos;
-    for(int var = 1; var <= id_grupo; ++var)
-    {
-        grupos.append(0);
-        for (int temp = 0; temp < grupoQueoDadoPertence.length(); ++temp)
-            if( grupoQueoDadoPertence.at(temp) == var )
-                grupos[var-1] += 1;
-    }
-
-    return grupos;
+    return grupoQueoDadoPertence;
 }
 
 QVector<int> DBSCAN::regionQuery(int p, QVector<double> *distancia)

@@ -7,12 +7,17 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    resultado.clear();
+
+    // Dimensões da área de edição (direita)
     sceneW = 650;
     sceneH = 590;
 
+    // Cria a cena
     scene = new QGraphicsScene(0, 0, sceneW, sceneH);
     ui->graphicsView->setScene(scene);
 
+    // Inverte a cena, pois o eixo é invertido na area de plotagem
     QMatrix m;
     m.translate(0, sceneH);
     m.scale(1, -1); // Inverte o eixo da scene
@@ -33,6 +38,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::start()
 {
+    resultado.clear();
+
     // Lê os valores dos campos
     int coluna1 = ui->col1SpinBox->value();
     int coluna2 = ui->col2SpinBox->value();
@@ -75,28 +82,39 @@ void MainWindow::start()
 
     file.close(); // Fecha o arquivo
 
-    if( ui->parametrosCheckBox->isChecked() )
-    {
-        parametros.start(col1, col2);
-        minPoints = parametros.getMinPoints();
-        eps       = parametros.getEps();
-
-        ui->epsSpinBox->setValue(eps);
-        ui->minPointsSpinBox->setValue(minPoints);
-    }
-
     // Chama o DBSCAN e aguarda o resultado, que será um vetor com a quantidade de dados por grupo
-    QVector<int> grupos = dbscan.start(col1, col2, minPoints, eps, n_linhas);
+    resultado = dbscan.start(col1, col2, minPoints, eps, n_linhas);
 
     // Chama a função que mostra os dados na tela
-    mostraGrupos(grupos);
+    mostraGrupos();
 
     // Chama a função que plota os dados na tela
     plot();
 }
 
-void MainWindow::mostraGrupos(QVector<int> grupos)
+void MainWindow::mostraGrupos()
 {
+    if( resultado.isEmpty() )
+        return;
+
+    int id_grupo = 0;
+    for (int temp = 0; temp < resultado.length(); ++temp)
+    {
+        qDebug() << resultado.at(temp);
+        if( resultado.at(temp) > id_grupo )
+            id_grupo = resultado.at(temp);
+    }
+
+    // Agrupa em um novo vetor os grupos formados anteriormente
+    QVector<int> grupos;
+    for(int var = 1; var <= id_grupo; ++var)
+    {
+        grupos.append(0);
+        for (int temp = 0; temp < resultado.length(); ++temp)
+            if( resultado.at(temp) == var )
+                grupos[var-1] += 1;
+    }
+
     // Limpa o campo e coloca os pontos, eps e minpoiints
     ui->saidaPlainTextEdit->clear();
     ui->saidaPlainTextEdit->appendPlainText( "Pontos : "      + QString::number(n_linhas) +
@@ -210,6 +228,9 @@ void MainWindow::on_salvarPushButton_clicked()
 void MainWindow::on_start2PushButton_clicked()
 {
     // START 2
+
+    resultado.clear();
+
     // CHAMAR DBSCAN DE OUTRA FORMA
     if( xValues.isEmpty() )
     {
@@ -227,24 +248,14 @@ void MainWindow::on_start2PushButton_clicked()
     col1 = xValues;
     col2 = yValues;
 
-    if( ui->parametrosCheckBox->isChecked() )
-    {
-        parametros.start(col1, col2);
-        minPoints = parametros.getMinPoints();
-        eps       = parametros.getEps();
-
-        ui->epsSpinBox->setValue(eps);
-        ui->minPointsSpinBox->setValue(minPoints);
-    }
-
     nomeColuna1 = "X";
     nomeColuna2 = "Y";
 
     // Chama o DBSCAN e aguarda o resultado, que será um vetor com a quantidade de dados por grupo
-    QVector<int> grupos = dbscan.start(col1, col2, minPoints, eps, n_linhas);
+    resultado = dbscan.start(col1, col2, minPoints, eps, n_linhas);
 
     // Chama a função que mostra os dados na tela
-    mostraGrupos(grupos);
+    mostraGrupos();
 
     // Chama a função que plota os dados na tela
     plot();
@@ -252,8 +263,6 @@ void MainWindow::on_start2PushButton_clicked()
 
 void MainWindow::on_carregarPushButton_clicked()
 {
-    // Carregar dados
-
     // Limpa os vetores
     col1.clear();
     col2.clear();
@@ -331,16 +340,42 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     }
 }
 
-void MainWindow::on_parametrosCheckBox_stateChanged(int state)
+// Salva o gráfico como imagem (PNG)
+void MainWindow::on_salvarComoImagemPushButton_clicked()
 {
-    if( state == 2 )
-    {
-        ui->minPointsSpinBox->setEnabled(false);
-        ui->epsSpinBox->setEnabled(false);
-    }
+    QString filePath = QFileDialog::getSaveFileName(
+            new QWidget,
+            tr("Salvar Gráfico"),
+            "Grafico1",
+            "Portable Network Graphics files (*.png)" );
+
+    if( filePath.isEmpty() )
+        return;
+
+    if( ui->plot->savePng(filePath) )
+        QMessageBox::information(this, "DBSCAN", "Salvo com sucesso!");
     else
+        QMessageBox::information(this, "DBSCAN", "Não foi possível salvar, tente novamente!");
+}
+
+void MainWindow::on_salvarResultadoEmCSV_clicked()
+{
+    if( resultado.isEmpty() )
+        return;
+
+    QString filePath = QFileDialog::getSaveFileName(
+            new QWidget,
+            tr("Salvar Resultado"),
+            "",
+            "CSV files (*.csv)" );
+
+    QFile file( filePath ); // Tenta escrever o resultado no arquivo CSV
+    if( file.open( QFile::WriteOnly |QFile::Truncate ) )
     {
-        ui->minPointsSpinBox->setEnabled(true);
-        ui->epsSpinBox->setEnabled(true);
+        QTextStream stream( &file );
+        for (int temp = 0; temp < resultado.length(); ++temp)
+        {
+            stream << resultado.at(temp)-1 << "\n";
+        }
     }
 }

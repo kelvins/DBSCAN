@@ -59,6 +59,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="abreArquivo">
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
            <property name="styleSheet">
             <string notr="true">background-color: rgb(226, 226, 226);</string>
            </property>
@@ -233,16 +236,6 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QCheckBox" name="parametrosCheckBox">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Definir parâmetros (MinPoints e eps) automaticamente</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -256,9 +249,38 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="salvarResultadoEmCSV">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(226, 226, 226);</string>
+         </property>
+         <property name="text">
+          <string>Salvar resultado em CSV</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="salvarComoImagemPushButton">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(226, 226, 226);</string>
+         </property>
+         <property name="text">
+          <string>Salvar o gráfico como imagem</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="startButton">
          <property name="enabled">
           <bool>false</bool>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="styleSheet">
           <string notr="true">background-color: rgb(226, 226, 226);</string>
@@ -359,6 +381,9 @@ color: rgb(243, 243, 243);</string>
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(226, 226, 226);
 </string>
@@ -373,6 +398,9 @@ color: rgb(243, 243, 243);</string>
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(226, 226, 226);
 </string>
@@ -384,6 +412,9 @@ color: rgb(243, 243, 243);</string>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_2">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(226, 226, 226);
 </string>
@@ -397,6 +428,9 @@ color: rgb(243, 243, 243);</string>
       <widget class="QPushButton" name="start2PushButton">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(226, 226, 226);
