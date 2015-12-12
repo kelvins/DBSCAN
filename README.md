@@ -45,6 +45,6 @@ O DBSCAN requer dois parâmetros:
 
 ![alt text](https://github.com/kelvins/DBSCAN/blob/master/screenshot3.png "Screenshot")
 
-> Obs.: Esta aplicação foi desenvolvida como estudo e trabalho para a disciplina de Mineração de Dados e tem como objetivo ser utilizada para o desenvolvimento do trabalho e posteriormente para fins didáticos do algoritmo DBScan.
+> Obs.: Esta aplicação foi desenvolvida como estudo e trabalho para a disciplina de Mineração de Dados e tem como objetivo ser utilizada para o desenvolvimento do trabalho e posteriormente para fins didáticos do algoritmo DBScan. O algoritmo implementado foi baseado no estudo do artigo original "A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise" e no pseudocódigo apresentado no seguinte link: https://en.wikipedia.org/wiki/DBSCAN
 
 Qualquer dúvida ou sugestão sobre a aplicação entre em contato pelo e-mail: kelvinpfw@hotmail.com
